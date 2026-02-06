@@ -40,6 +40,18 @@ async function POST(req: NextRequest, res: NextResponse) {
 
         )
 
+        const res = NextResponse.json({
+            message: "Login Successfull",
+            token,
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email
+            }
+        })
+
+        return res;
+
 
     }
     catch (err) {
