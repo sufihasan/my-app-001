@@ -2,6 +2,11 @@ import { mongoConnect } from "@/lib/mongoConnect";
 import { error } from "console";
 import { NextRequest, NextResponse } from "next/server";
 import *as bcrypt from "bcrypt";
+import jwt from 'jsonwebtoken';
+const JWT_SECRET = process.env.JWT_SECRET as string;
+if (!JWT_SECRET) {
+    throw new Error("No jwt secret found");
+}
 
 async function POST(req: NextRequest, res: NextResponse) {
     try {
@@ -19,8 +24,21 @@ async function POST(req: NextRequest, res: NextResponse) {
         const isPasswordValid = await bcrypt.compare(password, user.password)
 
         if (!isPasswordValid) {
-            return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+            return NextResponse.json(
+                { error: "Invalid credentials" },
+                { status: 401 });
         }
+
+        //  Genarate jwt
+        const token = jwt.sign({
+            id: user._id.toString(),
+            email: user.email,
+            role: user.role
+        },
+            JWT_SECRET,
+            { expiresIn: '7d' }
+
+        )
 
 
     }
