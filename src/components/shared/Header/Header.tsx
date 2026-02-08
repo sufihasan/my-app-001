@@ -8,6 +8,7 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet";
+import { useAuth } from "@/hooks/useAuth";
 import { getAuthUser } from "@/service/getAuthUser";
 import { logout } from "@/service/logout";
 import { TUser } from "@/types/user";
@@ -19,19 +20,24 @@ import { useEffect, useState } from "react";
 
 export default function Header() {
     const router = useRouter();
-    const [user, setUser] = useState<TUser | null>(null);
+    // const [user, setUser] = useState<TUser | null>(null);
 
     // if using localStorage
     // const { isAuthenticated } = useAuth();
+    const { isAuthenticated, logout } = useAuth();
+    const user = {
+        name: 'Hasan sarder',
+        email: 'hasan6nh@gmail.com'
+    }
 
     //if using cookies
-    useEffect(() => {
-        const fetchUser = async () => {
-            const user = await getAuthUser();
-            setUser(user);
-        };
-        fetchUser();
-    }, []);
+    // useEffect(() => {
+    //     const fetchUser = async () => {
+    //         const user = await getAuthUser();
+    //         setUser(user);
+    //     };
+    //     fetchUser();
+    // }, []);
 
     const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -39,9 +45,13 @@ export default function Header() {
         { title: "Home", url: "/" },
         { title: "Events", url: "/events" },
         { title: "About", url: "/about" },
-        ...(user ? [{ title: "Dashboard", url: "/dashboard/overview" }] : []),
-        ...(user
-            ? [{ title: "Create Event", url: "/dashboard/create-event" }]
+        // ...(user ? [{ title: "Dashboard", url: "/dashboard/overview" }] : []),
+        // ...(user
+        //     ? [{ title: "Create Event", url: "/dashboard/create-event" }]
+        //     : []),
+        ...(isAuthenticated ? [{ title: "My Events", url: "/my-events" }] : []),
+        ...(isAuthenticated
+            ? [{ title: "Create Event", url: "/events/create" }]
             : []),
     ];
 
@@ -83,7 +93,7 @@ export default function Header() {
 
                 {/* Desktop Auth Buttons */}
                 <div className="hidden md:flex items-center gap-3">
-                    {user ? (
+                    {isAuthenticated ? (
                         <>
                             <div className="text-sm text-muted-foreground">{user.email}</div>
                             <Button onClick={handleLogoutClick} size="sm">

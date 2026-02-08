@@ -8,7 +8,7 @@ if (!JWT_SECRET) {
     throw new Error("No jwt secret found");
 }
 
-async function POST(req: NextRequest, res: NextResponse) {
+export async function POST(req: NextRequest, res: NextResponse) {
     try {
         const { client, db } = await mongoConnect();
         const { email, password } = await req.json();

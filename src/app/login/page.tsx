@@ -16,10 +16,13 @@ import {
     FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { setToken } from "@/lib/token";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React from "react";
 import { useForm } from "react-hook-form";
+
 
 interface LoginValues {
     email: string;
@@ -27,6 +30,7 @@ interface LoginValues {
 }
 
 export default function LoginPage() {
+    const router = useRouter();
     const {
         register,
         handleSubmit,
@@ -35,9 +39,26 @@ export default function LoginPage() {
 
     const [showPassword, setShowPassword] = React.useState(false);
 
-    const onSubmit = (data: LoginValues) => {
+    const onSubmit = async (data: LoginValues) => {
         console.log("Login Data:", data);
         // here you can call your login API
+        const res = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+
+        const result = await res.json();
+
+        if (result.token) {
+            alert("Login Successfully");
+            setToken(result.token);
+            router.push('/');
+        }
+        else {
+            alert('Login Failed');
+        }
+
     };
 
     return (
