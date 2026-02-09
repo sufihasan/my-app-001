@@ -1,7 +1,9 @@
 import { mongoConnect } from "@/lib/mongoConnect";
-import { NextResponse } from "next/server";
+import { TEvent } from "@/types/event";
 
-async function GET() {
+import { NextRequest, NextResponse } from "next/server";
+
+export async function GET() {
     try {
         const { client, db } = await mongoConnect();
         const events = await db.collection("events").find().toArray();
@@ -16,6 +18,37 @@ async function GET() {
         }))
 
         return NextResponse.json(formattedEvents);
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
+
+
+// create a event
+export async function POST(req: NextRequest) {
+    try {
+        const { client, db } = await mongoConnect();
+        const data: TEvent = req.json();
+
+        if (!data.title || !data.location || !data.description) {
+            return NextResponse.json(
+                { error: 'All field are required' },
+                { status: 400 }
+            )
+        }
+
+        const result = await db.collection('events').insertOne({
+            data,
+        })
+
+        return NextResponse.json(
+            { message: 'Event created', id: result.insertedId },
+            {
+                status: 201
+            }
+        );
+
     }
     catch (err) {
         console.log(err);
