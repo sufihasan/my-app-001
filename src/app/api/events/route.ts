@@ -25,11 +25,11 @@ export async function GET() {
 }
 
 
-// create a event
+// create a event api
 export async function POST(req: NextRequest) {
     try {
         const { client, db } = await mongoConnect();
-        const data: TEvent = req.json();
+        const data: TEvent = await req.json();
 
         if (!data.title || !data.location || !data.description) {
             return NextResponse.json(
@@ -38,8 +38,17 @@ export async function POST(req: NextRequest) {
             )
         }
 
+        // const result = await db.collection('events').insertOne({
+        //     data
+        // })
+
         const result = await db.collection('events').insertOne({
-            data,
+            title: data.title,
+            location: data.location,
+            image: data.image,
+            description: data.description,
+            date: data.date,
+            createdAt: new Date(),
         })
 
         return NextResponse.json(
